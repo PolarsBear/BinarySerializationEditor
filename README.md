@@ -11,7 +11,7 @@ Primitive saving features (WARNING: still glitchy, do not overwrite anything imp
 
 ## Screenshot(s)
 
-![WNTGD Stats File](https://user-images.githubusercontent.com/63355054/178562648-515373a2-db0d-473a-974c-50bf658b22b5.png)
+![WNTGD Stats File](https://user-images.githubusercontent.com/63355054/178563978-b249072d-b6c2-43c8-8e63-5a2522e86b74.png)
 ![WNTGD Stats File Modified](https://user-images.githubusercontent.com/63355054/178563596-d1eee8c1-94d6-47a1-974b-ad8efa2aef79.png)
 
 
