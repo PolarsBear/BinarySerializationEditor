@@ -37,7 +37,6 @@ namespace BinarySerializationEditor
             try
             {
                 dynamic result = formatter.Deserialize(stream);
-                Console.WriteLine(result);
                 deserialization.ResetForNewDeserialization();
                 if (result is IEnumerable) // Is enumerable
                 {
@@ -45,7 +44,6 @@ namespace BinarySerializationEditor
                     {
                         foreach (dynamic keyValue in result) // Iterate as Dictionary
                         {
-                            Console.WriteLine(keyValue);
                             deserialization.CreateDictEntryUI(keyValue);
                         }
                     }
@@ -54,15 +52,18 @@ namespace BinarySerializationEditor
                         int i = 0;
                         foreach (dynamic value in result) // Iterate as list
                         {
-                            Console.WriteLine(value);
                             deserialization.CreateListEntryUI(value, i);
                             i++;
                         }
                     }
                 }
-                else
+                else // Is object
                 {
-
+                    foreach (FieldInfo field in result.GetType().GetFields())
+                    {
+                        Console.WriteLine(field.Name);
+                        deserialization.CreateFieldUI(field, field.GetValue(result));
+                    }
                 }
             }
             catch (System.Runtime.Serialization.SerializationException exception)
