@@ -25,6 +25,9 @@ namespace BinarySerializationEditor
         Color backGreen = Color.FromArgb(232, 255, 229);
         Color backRed = Color.FromArgb(255, 229, 229);
 
+
+        // Seems i'm gonna have to be *dramatic pause* ORGANIZED *lightining strike*
+
         public Dictionary<MetroTextBox, dynamic> objects = new Dictionary<MetroTextBox, dynamic>();
 
         public Dictionary<MetroTextBox, bool> changed = new Dictionary<MetroTextBox, bool>();
@@ -33,12 +36,15 @@ namespace BinarySerializationEditor
 
         public dynamic currentObject;
 
+        public dynamic origin;
+
         MainForm main;
         public int currentY = 0;
 
-        public Deserialization(MainForm main)
+        public Deserialization(MainForm main, dynamic origin)
         {
             this.main = main;
+            this.origin = origin;
         }
 
         public void ResetForNewDeserialization()

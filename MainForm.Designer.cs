@@ -39,6 +39,7 @@ namespace BinarySerializationEditor
             this.fieldNameTooltip = new MetroFramework.Components.MetroToolTip();
             this.metroButton1 = new MetroFramework.Controls.MetroButton();
             this.saveDialog = new System.Windows.Forms.SaveFileDialog();
+            this.metroButton2 = new MetroFramework.Controls.MetroButton();
             ((System.ComponentModel.ISupportInitialize)(this.styleManager)).BeginInit();
             this.SuspendLayout();
             // 
@@ -108,11 +109,24 @@ namespace BinarySerializationEditor
             this.saveDialog.Title = "Save Modified Data";
             this.saveDialog.FileOk += new System.ComponentModel.CancelEventHandler(this.saveDialog_FileOk);
             // 
+            // metroButton2
+            // 
+            this.metroButton2.Highlight = true;
+            this.metroButton2.Location = new System.Drawing.Point(24, 50);
+            this.metroButton2.Name = "metroButton2";
+            this.metroButton2.Size = new System.Drawing.Size(35, 23);
+            this.metroButton2.Style = MetroFramework.MetroColorStyle.Red;
+            this.metroButton2.TabIndex = 6;
+            this.metroButton2.Text = "Back";
+            this.metroButton2.Visible = false;
+            this.metroButton2.Click += new System.EventHandler(this.metroButton2_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(448, 434);
+            this.Controls.Add(this.metroButton2);
             this.Controls.Add(this.metroButton1);
             this.Controls.Add(this.objectView);
             this.Controls.Add(this.loadDLLBtn);
@@ -141,6 +155,7 @@ namespace BinarySerializationEditor
         public System.Windows.Forms.Panel objectView;
         private MetroFramework.Controls.MetroButton metroButton1;
         private System.Windows.Forms.SaveFileDialog saveDialog;
+        private MetroFramework.Controls.MetroButton metroButton2;
     }
 }
 

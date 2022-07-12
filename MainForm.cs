@@ -20,11 +20,10 @@ namespace BinarySerializationEditor
     public partial class MainForm : MetroForm
     {
         BinaryFormatter formatter = new BinaryFormatter();
-        Deserialization deserialization;
+        Deserialization deserialization = null;
         public MainForm()
         {
             InitializeComponent();
-            deserialization = new Deserialization(this);
         }
         private void chooseFileBtn_Click(object sender, EventArgs e)
         {
@@ -37,16 +36,15 @@ namespace BinarySerializationEditor
             
             try
             {
+                formatter = new BinaryFormatter();
                 dynamic result = formatter.Deserialize(stream);
+                deserialization = new Deserialization(this, result);
                 deserialization.DisplayObject(result);
             }
-            catch (System.Runtime.Serialization.SerializationException exception)
+            catch (Exception exception)
             {
-                //[TODO] Proper error display system
-                // Why couldn't they add more info in SerializationException? It doesn't specify what the issue is... And expects programmers to do string parsing gymnastics just to extract simple data
-                string typeName = exception.Message.Replace("Unable to load type ", "").Replace(" required for deserialization.", ""); // I'll improve this later, too lazy rn
-                Console.WriteLine(typeName);
-                MessageBox.Show(this, $"The type {typeName} is missing.\nDid you forget to load a DLL?\n(For Unity games, load AssemblyCSharp.dll)", "Required type not found!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show(this, $"{exception.Message}\nDid you forget to load a DLL?\n(For Unity games, load AssemblyCSharp.dll)", "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                Console.WriteLine(exception.StackTrace);
             }
             stream.Close();
         }
@@ -56,10 +54,9 @@ namespace BinarySerializationEditor
             string path = Path.GetDirectoryName(openDLL.FileName);
             foreach (string f in Directory.GetFiles(path))
             {
-                // Load all dlls in folder, to make sure no dependencies are lost ()
+                // Load all dlls in folder, to make sure no dependencies are lost (dunno if this is even useful. oh well)
                 if (f.EndsWith(".dll") && !f.ToLower().Contains("firstpass")) // Get only dlls, and ignore unity's weird firstpass dll
                 {
-                    Console.WriteLine(f);
                     AppDomain.CurrentDomain.AssemblyResolve += new AssemblyResolver(Path.GetFileNameWithoutExtension(f) , f).AssemblyResolve;
                 }
             }
@@ -72,12 +69,22 @@ namespace BinarySerializationEditor
 
         private void metroButton1_Click(object sender, EventArgs e)
         {
+            if (deserialization == null)
+            {
+                MessageBox.Show(this, "You need to deserialize a binary file first!", "No Loaded Data");
+                return;
+            }
             saveDialog.ShowDialog(this);
         }
 
         private void saveDialog_FileOk(object sender, CancelEventArgs e)
         {
             deserialization.Save(saveDialog.FileName);
+        }
+
+        private void metroButton2_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
