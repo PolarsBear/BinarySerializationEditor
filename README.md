@@ -17,6 +17,7 @@ Primitive saving features (WARNING: still glitchy, do not overwrite anything imp
 
 
 (Modified values will be highlighted red or green if they are invalid or valid respectively)
+
 (Tooltips are shown when the mouse hovers over a label, just in case the name didn't fit)
 
 (`playerstats.dat` from game "We Need to Go Deeper")
