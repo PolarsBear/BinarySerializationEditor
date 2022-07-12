@@ -9,79 +9,99 @@ using System.Reflection;
 
 namespace BinarySerializationEditor
 {
-    public class SerializationElement
+    public class SerializationElement // Organized way to keep track of elements
     {
-        public enum OriginType
+        public enum OriginType // If represented thing is a field, dictionary entry or list item
         {
             Field,
             DictEntry,
             ListItem
         }
 
-        public enum Classification
+        public enum Classification // If represented thing is an object, dictionary, list or primitive type (string, int, float, etc...)
         {
-            Object,
+            Object, 
             Dictionary,
-            List
+            List,
+            Primitive
         }
 
 
-        public Dictionary<string, SerializationElement> children;
-        public dynamic rawObj;
-        public string name;
-        public OriginType origin;
-        public Classification classification;
+        public Dictionary<string, SerializationElement> children; // All children, depending on classification, will be created in different ways
+
+        public dynamic value; // Represented object in raw form
+
+        public string name; // Key in parent's children dictionary
+
+        public OriginType origin; // Origin of element
+        public Classification classification; // Classification of element
 
 
-        public SerializationElement(string name, dynamic obj, OriginType originType)
+        public SerializationElement(string name, dynamic obj, OriginType originType) // Recursive constructor
         {
+            // Set argument stuff
             origin = originType;
-            rawObj = obj;
+            value = obj;
             this.name = name;
-            if (obj is IEnumerable) // Is enumerable
+
+            AddAllChildren(); // Add Children
+        }
+
+
+        // Child Adders
+
+        public void AddAllChildren()
+        {
+            children.Clear(); // Remove all children first
+
+            if (value is IEnumerable) // Is enumerable
             {
-                if (obj is IDictionary) // Has two values
+                if (value is IDictionary) // Has two values
                 {
-                    foreach (KeyValuePair<dynamic, dynamic> keyValue in obj) // Iterate as Dictionary
+                    classification = Classification.Dictionary;
+                    foreach (KeyValuePair<dynamic, dynamic> keyValue in value) // Iterate as Dictionary
                     {
                         AddChildFromKeyValuePair(keyValue);
                     }
                 }
                 else // Has only one value
                 {
+                    classification = Classification.List;
                     int i = 0;
-                    foreach (dynamic value in obj) // Iterate as list
+                    foreach (object value in value) // Iterate as list
                     {
-                        CreateListEntryUI(value, i);
+                        AddChildFromListItem(i, value);
                         i++;
                     }
                 }
             }
             else // Is object
             {
-                foreach (FieldInfo field in obj.GetType().GetFields())
+                classification = Classification.Object;
+                foreach (FieldInfo field in value.GetType().GetFields()) // Iterate through all fields
                 {
                     AddChildFromField(field);
                 }
             }
         }
 
+        // Individual child adders
         public SerializationElement AddChildFromField(FieldInfo field)
         {
-            var child = new SerializationElement(field.Name, field.GetValue(rawObj), OriginType.Field);
+            var child = new SerializationElement(field.Name, field.GetValue(value), OriginType.Field); // Create field child
             children.Add(field.Name, child);
             return child;
         }
 
         public SerializationElement AddChildFromKeyValuePair(KeyValuePair<object, object> kvp)
         {
-            var child = new SerializationElement(Convert.ToString(kvp.Key), kvp.Value, OriginType.DictEntry);
+            var child = new SerializationElement(Convert.ToString(kvp.Key), kvp.Value, OriginType.DictEntry); // Create dictionary entry child
             children.Add(Convert.ToString(kvp.Key), child);
             return child;
         }
-        public SerializationElement AddChildFromKeyValuePair(int index, dynamic value)
+        public SerializationElement AddChildFromListItem(int index, object value)
         {
-            var child = new SerializationElement(Convert.ToString(index), value, OriginType.ListItem);
+            var child = new SerializationElement(Convert.ToString(index), value, OriginType.ListItem); // Create list item child
             children.Add(Convert.ToString(index), child);
             return child;
         }
