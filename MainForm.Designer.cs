@@ -118,7 +118,6 @@ namespace BinarySerializationEditor
             this.metroButton2.Style = MetroFramework.MetroColorStyle.Red;
             this.metroButton2.TabIndex = 6;
             this.metroButton2.Text = "Back";
-            this.metroButton2.Visible = false;
             this.metroButton2.Click += new System.EventHandler(this.metroButton2_Click);
             // 
             // MainForm
