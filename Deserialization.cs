@@ -23,7 +23,7 @@ namespace BinarySerializationEditor
         public void ResetForNewDeserialization()
         {
             currentY = 0;
-            //main.objectView.Controls.Clear();
+            main.objectView.Controls.Clear();
         }
 
         public Tuple<MetroLabel, MetroTextBox, MetroButton> CreateFieldUI(FieldInfo field, dynamic value)

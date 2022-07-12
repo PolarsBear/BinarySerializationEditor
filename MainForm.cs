@@ -34,10 +34,10 @@ namespace BinarySerializationEditor
         private void openFileDialog1_FileOk(object sender, CancelEventArgs e)
         {
             Stream stream = chooseFile.OpenFile();
+            deserialization.ResetForNewDeserialization();
             try
             {
                 dynamic result = formatter.Deserialize(stream);
-                deserialization.ResetForNewDeserialization();
                 if (result is IEnumerable) // Is enumerable
                 {
                     if (result is IDictionary) // Has two values
@@ -61,7 +61,6 @@ namespace BinarySerializationEditor
                 {
                     foreach (FieldInfo field in result.GetType().GetFields())
                     {
-                        Console.WriteLine(field.Name);
                         deserialization.CreateFieldUI(field, field.GetValue(result));
                     }
                 }
