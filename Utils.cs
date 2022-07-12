@@ -9,7 +9,7 @@ namespace BinarySerializationEditor
 {
     public static class Utils
     {
-        public static bool IsSimple(Type type)
+        public static bool IsPrimitive(Type type)
         {
             return type.IsPrimitive
               || type.Equals(typeof(string));
