@@ -34,36 +34,11 @@ namespace BinarySerializationEditor
         private void openFileDialog1_FileOk(object sender, CancelEventArgs e)
         {
             Stream stream = chooseFile.OpenFile();
-            deserialization.ResetForNewDeserialization();
+            
             try
             {
                 dynamic result = formatter.Deserialize(stream);
-                if (result is IEnumerable) // Is enumerable
-                {
-                    if (result is IDictionary) // Has two values
-                    {
-                        foreach (dynamic keyValue in result) // Iterate as Dictionary
-                        {
-                            deserialization.CreateDictEntryUI(keyValue);
-                        }
-                    }
-                    else // Has only one value
-                    {
-                        int i = 0;
-                        foreach (dynamic value in result) // Iterate as list
-                        {
-                            deserialization.CreateListEntryUI(value, i);
-                            i++;
-                        }
-                    }
-                }
-                else // Is object
-                {
-                    foreach (FieldInfo field in result.GetType().GetFields())
-                    {
-                        deserialization.CreateFieldUI(field, field.GetValue(result));
-                    }
-                }
+                deserialization.DisplayObject(result);
             }
             catch (System.Runtime.Serialization.SerializationException exception)
             {
@@ -93,6 +68,16 @@ namespace BinarySerializationEditor
         private void loadDLLBtn_Click(object sender, EventArgs e)
         {
             openDLL.ShowDialog(this);
+        }
+
+        private void metroButton1_Click(object sender, EventArgs e)
+        {
+            saveDialog.ShowDialog(this);
+        }
+
+        private void saveDialog_FileOk(object sender, CancelEventArgs e)
+        {
+            deserialization.Save(saveDialog.FileName);
         }
     }
 }
