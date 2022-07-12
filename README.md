@@ -5,4 +5,5 @@
 
 
 ## Current Features
-View the base level of serialized data
+View saved data recursively
+Primitive saving features (WARNING: still glitchy, do not overwrite anything important without making backups and double checking)
