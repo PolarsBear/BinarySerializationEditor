@@ -38,28 +38,31 @@ namespace BinarySerializationEditor
             {
                 dynamic result = formatter.Deserialize(stream);
                 Console.WriteLine(result);
-
                 deserialization.ResetForNewDeserialization();
+                if (result is IEnumerable) // Is enumerable
+                {
+                    if (result is IDictionary) // Has two values
+                    {
+                        foreach (dynamic keyValue in result) // Iterate as Dictionary
+                        {
+                            Console.WriteLine(keyValue);
+                            deserialization.CreateDictEntryUI(keyValue);
+                        }
+                    }
+                    else // Has only one value
+                    {
+                        int i = 0;
+                        foreach (dynamic value in result) // Iterate as list
+                        {
+                            Console.WriteLine(value);
+                            deserialization.CreateListEntryUI(value, i);
+                            i++;
+                        }
+                    }
+                }
+                else
+                {
 
-                foreach(dynamic keyValue in result)
-                {
-                    Console.WriteLine(keyValue);
-                    deserialization.CreateDictEntryUI(keyValue);
-                }
-                foreach (dynamic keyValue in result)
-                {
-                    Console.WriteLine(keyValue);
-                    deserialization.CreateDictEntryUI(keyValue);
-                }
-                foreach (dynamic keyValue in result)
-                {
-                    Console.WriteLine(keyValue);
-                    deserialization.CreateDictEntryUI(keyValue);
-                }
-                foreach (dynamic keyValue in result)
-                {
-                    Console.WriteLine(keyValue);
-                    deserialization.CreateDictEntryUI(keyValue);
                 }
             }
             catch (System.Runtime.Serialization.SerializationException exception)

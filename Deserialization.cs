@@ -54,6 +54,29 @@ namespace BinarySerializationEditor
             return new Tuple<MetroLabel, MetroTextBox, MetroButton>(label, textBox, moreDataBtn);
         }
 
+        public Tuple<MetroLabel, MetroTextBox, MetroButton> CreateListEntryUI(dynamic value, int index)
+        {
+            bool isSimple = Utils.IsSimple(value.GetType());
+            Tuple<MetroLabel, MetroTextBox, MetroButton> tuple = CreateGenericUI(!isSimple);
+            MetroLabel label = tuple.Item1;
+            MetroTextBox textBox = tuple.Item2;
+            MetroButton moreDataBtn = tuple.Item3;
+
+            textBox.Text = value.ToString();
+            label.Text = index.ToString();
+
+            main.fieldNameTooltip.SetToolTip(label, index.ToString());
+
+            main.objectView.Controls.Add(label);
+            main.objectView.Controls.Add(textBox);
+            if (!isSimple)
+            {
+                main.objectView.Controls.Add(moreDataBtn);
+            }
+
+            return new Tuple<MetroLabel, MetroTextBox, MetroButton>(label, textBox, moreDataBtn);
+        }
+
         public Tuple<MetroLabel, MetroTextBox, MetroButton> CreateGenericUI(bool moreData)
         {
             MetroLabel label = new MetroLabel();
