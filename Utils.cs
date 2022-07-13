@@ -11,7 +11,6 @@ namespace BinarySerializationEditor
     {
         public static bool IsPrimitive(Type type)
         {
-            Console.WriteLine(type);
             return type.IsPrimitive
               || type.Equals(typeof(string));
         }
@@ -27,12 +26,6 @@ namespace BinarySerializationEditor
             {
                 int t;
                 sucess = int.TryParse(str, out t);
-                return sucess ? t : obj;
-            }
-            else if (obj is bool)
-            {
-                bool t;
-                sucess = bool.TryParse(str, out t);
                 return sucess ? t : obj;
             }
             else if (obj is float)
@@ -54,20 +47,6 @@ namespace BinarySerializationEditor
             }
             sucess = false;
             return obj;
-            /*Type type = obj.GetType();
-            MethodInfo parseMethod = type.GetMethod("Parse", BindingFlags.Static | BindingFlags.Public);
-            if (parseMethod != null)
-            {
-
-                var t = parseMethod.Invoke(obj, new object[] { str });
-                if (t == null) return false;
-
-                obj = t;
-                return true;
-
-                
-            }
-            return false;*/
         }
     }
 }

@@ -11,6 +11,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Reflection;
 using System.IO;
 
+
 namespace BinarySerializationEditor
 {
     public class Display
@@ -22,9 +23,9 @@ namespace BinarySerializationEditor
             ListItem
         }
 
-        static Color backGreen = Color.FromArgb(225, 255, 210);
-        static Color backRed = Color.FromArgb(255, 229, 229);
-        static Color backWhite = Color.FromKnownColor(KnownColor.Window);
+        public static Color backGreen = Color.FromArgb(225, 255, 210);
+        public static Color backRed = Color.FromArgb(255, 229, 229);
+        public static Color backWhite = Color.FromKnownColor(KnownColor.Window);
 
 
         // Seems i'm gonna have to be *dramatic pause* ORGANIZED *lightining strike*
@@ -125,7 +126,30 @@ namespace BinarySerializationEditor
                         comboBox.BackColor = (element.value == element.originalValue) ? backWhite : backGreen;
                     };
                 }
+                else if (element.classification == SerializationElement.Classification.Enum)
+                {
+                    comboBox = GenericComboBox();
+                    comboBox.Location = new Point(90, 5 + display.currentY * 25);
+                    string[] enumNames = element.value.GetType().GetEnumNames();
+                    Array enumValues = element.value.GetType().GetEnumValues();
+                    for (int i = 0; i < enumValues.Length; i++)
+                    {
+                        var member = new EnumMember(enumNames[i], enumValues.GetValue(i));
+                        comboBox.Items.Add(member);
+                        if (member.value == element.value)
+                        {
+                            comboBox.SelectedItem = member;
+                        }
+                    }
+                    
 
+                    comboBox.SelectedIndexChanged += delegate
+                    {
+                        element.value = ((EnumMember)comboBox.SelectedItem).value;
+                        Console.WriteLine($"{element.value} == {element.originalValue}");
+                        comboBox.BackColor = (element.value == element.originalValue) ? backWhite : backGreen;
+                    };
+                }
                 else
                 {
 
@@ -139,11 +163,20 @@ namespace BinarySerializationEditor
                     textBox.BackColor = Color.FromKnownColor(KnownColor.Window);
 
                     textBox.Text = Convert.ToString(element.value);
+
+                    textBox.TextChanged += delegate
+                    {
+                        element.valueStr = textBox.Text;
+                        element.StringEdited();
+
+                        ChangedValue();
+                    };
                 }
 
-                if (element.classification != SerializationElement.Classification.Primitive)
+                if (element.classification != SerializationElement.Classification.Primitive && element.classification != SerializationElement.Classification.Enum)
                 {
-                    textBox.ReadOnly = true;
+                    if (textBox != null)
+                        textBox.ReadOnly = true;
 
                     expandBtn = new MetroButton();
                     expandBtn.Location = new Point(200, 5 + display.currentY * 25);
@@ -163,6 +196,25 @@ namespace BinarySerializationEditor
                 }
 
                 display.currentY++;
+
+                ChangedValue();
+            }
+
+            public void ChangedValue()
+            {
+                if (comboBox != null)
+                    comboBox.BackColor = (element.value == element.originalValue) ? backWhite : backGreen;
+                if (textBox != null)
+                {
+                    if (!element.strToObjValid)
+                    {
+                        textBox.BackColor = backRed;
+                    }
+                    else
+                    {
+                        textBox.BackColor = (element.value == element.originalValue) ? backWhite : backGreen;
+                    }
+                }
             }
 
             public static ComboBox GenericComboBox()

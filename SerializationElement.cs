@@ -24,7 +24,8 @@ namespace BinarySerializationEditor
             Object, 
             Dictionary,
             List,
-            Primitive
+            Primitive,
+            Enum
         }
 
 
@@ -35,76 +36,109 @@ namespace BinarySerializationEditor
 
         public dynamic value; // Represented object in raw form
 
+        public Type valueType; // Type of value
+
         public string name; // Key in parent's children dictionary
 
         public OriginType origin; // Origin of element
         public Classification classification; // Classification of element
 
-        public bool changedValid = false; // If the element's value has been modified and is valid
+        public bool strToObjValid = true;
+
+        public string valueStr;
+            
 
         public dynamic originalValue;
+
+        public Display.ElementGUI gui;
 
 
         public SerializationElement(string name, dynamic obj, OriginType originType, SerializationElement parent) // Recursive constructor
         {
-            Console.WriteLine($"---{name}---");
-
             // Set argument stuff
             origin = originType;
             value = obj;
+            valueStr = Convert.ToString(value);
             originalValue = value;
+            valueType = value.GetType();
             this.name = name;
             this.parent = parent;
 
             // [TODO] Add proper functionality for Enums
-            if (value == null || Utils.IsPrimitive(value.GetType()) || value.GetType().IsEnum) // Is primitive
+            if (value == null || Utils.IsPrimitive(valueType)) // Is primitive
             {
                 classification = Classification.Primitive;
                 return; // Primitive types have no children
             }
-
-            AddAllChildren(); // Add Children
-        }
-
-
-        // Child Adders
-
-        public void AddAllChildren()
-        {
-            children.Clear(); // Remove all children first
-
-            if (value is IEnumerable) // Is enumerable
+            else if (valueType.IsEnum)
+            {
+                classification = Classification.Enum;
+                return; // Enums have no children
+            }
+            else if (value is IEnumerable) // Is enumerable
             {
                 if (value is IDictionary) // Has two values for each item
                 {
                     classification = Classification.Dictionary;
-                    foreach (dynamic keyValue in value) // Iterate as Dictionary
-                    {
-                        AddChildFromKeyValuePair(keyValue.Key, keyValue.Value);
-                    }
                 }
-                else //if (!(value is string)) // Has only one value for each item
+                else // Has only one value for each item
                 {
                     classification = Classification.List;
-                    int iter = 0;
-                    foreach (dynamic i in value) // Iterate as list
-                    {
-                        //Console.WriteLine(i);
-                        AddChildFromListItem(iter, i);
-                        iter++;
-                    }
                 }
             }
             else // Is object
             {
                 classification = Classification.Object;
-                foreach (FieldInfo field in value.GetType().GetFields()) // Iterate through all fields
+            }
+
+            AddAllChildren(); // Add Children
+        }
+
+        public void StringEdited()
+        {
+            if (classification == Classification.Primitive && !(value is bool))
+            {
+                dynamic t = Utils.TryParse(value, valueStr, out strToObjValid);
+                if (strToObjValid)
                 {
-                    AddChildFromField(field);
+                    value = t;
                 }
             }
         }
 
+        // Child Adders
+
+        public void AddAllChildren()
+        {
+            children.Clear(); // Remove all pre-existing children first
+
+            switch (classification)
+            {
+                case Classification.Dictionary:
+                    foreach (dynamic keyValue in value) // Iterate as Dictionary
+                    {
+                        AddChildFromKeyValuePair(keyValue.Key, keyValue.Value);
+                    }
+                    return;
+
+                case Classification.List:
+                    int iter = 0;
+                    foreach (dynamic i in value) // Iterate as list
+                    {
+                        AddChildFromListItem(iter, i);
+                        iter++;
+                    }
+                    return;
+
+                case Classification.Object:
+                    foreach (FieldInfo field in valueType.GetFields()) // Iterate through all fields
+                    {
+                        AddChildFromField(field);
+                    }
+                    return;
+            }
+        }
+        
         // Individual child adders
         public SerializationElement AddChildFromField(FieldInfo field)
         {
