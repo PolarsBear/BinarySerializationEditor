@@ -6,6 +6,8 @@ using System.Reflection;
 using System.Threading.Tasks;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using Newtonsoft.Json;
+
 public static class Utils
 {
     public static T DeepClone<T>(T obj)
@@ -18,6 +20,12 @@ public static class Utils
 
             return (T)formatter.Deserialize(stream);
         }
+    }
+
+    public static bool ProperEquals<T>(T a, T b)
+    {
+        // How the hell is this not in default .Net???????
+        return (JsonConvert.SerializeObject(a) == JsonConvert.SerializeObject(b));
     }
 
     public static bool IsPrimitive(Type type)

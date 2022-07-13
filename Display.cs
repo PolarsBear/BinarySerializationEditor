@@ -221,7 +221,7 @@ namespace BinarySerializationEditor
                 }
                 else
                 {
-                    textBox.BackColor = (element.value == element.originalValue) ? backWhite : backGreen;
+                    textBox.BackColor = Utils.ProperEquals<dynamic>(element.value, element.originalValue) ? backWhite : backGreen;
                 }
             }
 
