@@ -46,23 +46,26 @@ namespace BinarySerializationEditor
         public bool strToObjValid = true;
 
         public string valueStr;
-            
+
+        public dynamic location;
 
         public dynamic originalValue;
 
         public Display.ElementGUI gui;
 
 
-        public SerializationElement(string name, dynamic obj, OriginType originType, SerializationElement parent) // Recursive constructor
+        public SerializationElement(string name, dynamic obj, OriginType originType, SerializationElement parent, dynamic locationData) // Recursive constructor
         {
             // Set argument stuff
             origin = originType;
             value = obj;
             valueStr = Convert.ToString(value);
-            originalValue = value;
+            originalValue = Utils.DeepClone<dynamic>(value);
             valueType = value.GetType();
             this.name = name;
             this.parent = parent;
+
+            location = locationData;
 
             // [TODO] Add proper functionality for Enums
             if (value == null || Utils.IsPrimitive(valueType)) // Is primitive
@@ -92,6 +95,8 @@ namespace BinarySerializationEditor
             }
 
             AddAllChildren(); // Add Children
+
+            gui = new Display.ElementGUI(this, Display.instance);
         }
 
         public void StringEdited()
@@ -102,9 +107,34 @@ namespace BinarySerializationEditor
                 if (strToObjValid)
                 {
                     value = t;
+                    switch (origin)
+                    {
+                        case OriginType.Field:
+                            location.SetValue(parent.value, value);
+                            return;
+
+                        case OriginType.DictEntry:
+                            parent.value[location] = value;
+                            return;
+
+                        case OriginType.ListItem:
+                            parent.value[location] = value;
+                            return;
+
+                        case OriginType.TopLevel:
+                            return;
+
+                    }
                 }
             }
+
+            
         }
+
+        
+
+
+
 
         // Child Adders
 
@@ -142,20 +172,20 @@ namespace BinarySerializationEditor
         // Individual child adders
         public SerializationElement AddChildFromField(FieldInfo field)
         {
-            var child = new SerializationElement(field.Name, field.GetValue(value), OriginType.Field, this); // Create field child
+            var child = new SerializationElement(field.Name, field.GetValue(value), OriginType.Field, this, field); // Create field child
             children.Add(field.Name, child);
             return child;
         }
 
         public SerializationElement AddChildFromKeyValuePair(dynamic key, dynamic value)
         {
-            var child = new SerializationElement(Convert.ToString(key), value, OriginType.DictEntry, this); // Create dictionary entry child
+            var child = new SerializationElement(Convert.ToString(key), value, OriginType.DictEntry, this, key); // Create dictionary entry child
             children.Add(Convert.ToString(key), child);
             return child;
         }
         public SerializationElement AddChildFromListItem(int index, dynamic value)
         {
-            var child = new SerializationElement(Convert.ToString(index), value, OriginType.ListItem, this); // Create list item child
+            var child = new SerializationElement(Convert.ToString(index), value, OriginType.ListItem, this, index); // Create list item child
             children.Add(Convert.ToString(index), child);
             return child;
         }

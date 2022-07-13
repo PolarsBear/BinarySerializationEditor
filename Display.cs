@@ -43,10 +43,14 @@ namespace BinarySerializationEditor
 
 
         public Control.ControlCollection viewControls;
+
+        public static Display instance;
         
 
         public Display(MainForm main, string path)
         {
+            instance = this;
+
             this.main = main;
             FileStream file = File.OpenRead(path);
 
@@ -54,7 +58,7 @@ namespace BinarySerializationEditor
 
             file.Close();
 
-            topElement = new SerializationElement("Top", origin, SerializationElement.OriginType.TopLevel, null);
+            topElement = new SerializationElement("Top", origin, SerializationElement.OriginType.TopLevel, null, null);
             currentElement = topElement;
 
             viewControls = main.objectView.Controls;
@@ -80,8 +84,7 @@ namespace BinarySerializationEditor
                 viewControls.Add(gui.label);
                 viewControls.Add(gui.textBox);
                 viewControls.Add(gui.comboBox);
-                if (gui.hasBtn)
-                    viewControls.Add(gui.expandBtn);
+                viewControls.Add(gui.expandBtn);
             }
             main.backButton.Visible = currentElement != topElement;
         }
@@ -92,8 +95,6 @@ namespace BinarySerializationEditor
             public MetroTextBox textBox;
             public ComboBox comboBox;
             public MetroButton expandBtn;
-
-            public bool hasBtn = false;
 
             public SerializationElement element;
 
@@ -188,8 +189,6 @@ namespace BinarySerializationEditor
                     expandBtn.Highlight = true;
                     expandBtn.Style = MetroFramework.MetroColorStyle.Yellow;
 
-                    hasBtn = true;
-
                     expandBtn.Click += delegate
                     {
                         display.currentElement = element;
@@ -204,18 +203,25 @@ namespace BinarySerializationEditor
 
             public void ChangedValue()
             {
-                if (comboBox != null)
-                    comboBox.BackColor = (element.value == element.originalValue) ? backWhite : backGreen;
-                if (textBox != null)
+                if (element.classification == SerializationElement.Classification.Primitive || element.classification == SerializationElement.Classification.Enum)
                 {
-                    if (!element.strToObjValid)
+                    if (comboBox != null)
+                        comboBox.BackColor = (element.value == element.originalValue) ? backWhite : backGreen;
+                    if (textBox != null)
                     {
-                        textBox.BackColor = backRed;
+                        if (!element.strToObjValid)
+                        {
+                            textBox.BackColor = backRed;
+                        }
+                        else
+                        {
+                            textBox.BackColor = (element.value == element.originalValue) ? backWhite : backGreen;
+                        }
                     }
-                    else
-                    {
-                        textBox.BackColor = (element.value == element.originalValue) ? backWhite : backGreen;
-                    }
+                }
+                else
+                {
+                    textBox.BackColor = (element.value == element.originalValue) ? backWhite : backGreen;
                 }
             }
 
