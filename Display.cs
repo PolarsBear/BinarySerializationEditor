@@ -22,8 +22,9 @@ namespace BinarySerializationEditor
             ListItem
         }
 
-        Color backGreen = Color.FromArgb(232, 255, 229);
-        Color backRed = Color.FromArgb(255, 229, 229);
+        static Color backGreen = Color.FromArgb(225, 255, 210);
+        static Color backRed = Color.FromArgb(255, 229, 229);
+        static Color backWhite = Color.FromKnownColor(KnownColor.Window);
 
 
         // Seems i'm gonna have to be *dramatic pause* ORGANIZED *lightining strike*
@@ -77,6 +78,7 @@ namespace BinarySerializationEditor
 
                 viewControls.Add(gui.label);
                 viewControls.Add(gui.textBox);
+                viewControls.Add(gui.comboBox);
                 if (gui.hasBtn)
                     viewControls.Add(gui.expandBtn);
             }
@@ -86,6 +88,7 @@ namespace BinarySerializationEditor
         {
             public MetroLabel label;
             public MetroTextBox textBox;
+            public ComboBox comboBox;
             public MetroButton expandBtn;
 
             public bool hasBtn = false;
@@ -105,17 +108,38 @@ namespace BinarySerializationEditor
 
                 label.Text = element.name;
 
-                textBox = new MetroTextBox();
-                textBox.Location = new Point(90, 5 + display.currentY * 25);
-                textBox.Name = "valueTextBox";
-                textBox.Size = new Size(106, 23);
-                textBox.TabIndex = 1;
-                textBox.ReadOnly = false;
-                textBox.UseStyleColors = true;
-                textBox.CustomBackground = true;
-                textBox.BackColor = Color.FromKnownColor(KnownColor.Window);
+                if (element.value is bool)
+                {
+                    comboBox = GenericComboBox();
+                    comboBox.Location = new Point(90, 5 + display.currentY * 25);
 
-                textBox.Text = Convert.ToString(element.value);
+                    comboBox.Items.Add(true);
+                    comboBox.Items.Add(false);
+
+                    comboBox.SelectedItem = element.value;
+
+                    comboBox.SelectedIndexChanged += delegate
+                    {
+                        element.value = comboBox.SelectedItem;
+                        Console.WriteLine($"{element.value} == {element.originalValue}");
+                        comboBox.BackColor = (element.value == element.originalValue) ? backWhite : backGreen;
+                    };
+                }
+
+                else
+                {
+
+                    textBox = new MetroTextBox();
+                    textBox.Location = new Point(90, 5 + display.currentY * 25);
+                    textBox.Name = "valueTextBox";
+                    textBox.Size = new Size(106, 23);
+                    textBox.TabIndex = 1;
+                    textBox.ReadOnly = false;
+                    textBox.CustomBackground = true;
+                    textBox.BackColor = Color.FromKnownColor(KnownColor.Window);
+
+                    textBox.Text = Convert.ToString(element.value);
+                }
 
                 if (element.classification != SerializationElement.Classification.Primitive)
                 {
@@ -139,6 +163,21 @@ namespace BinarySerializationEditor
                 }
 
                 display.currentY++;
+            }
+
+            public static ComboBox GenericComboBox()
+            {
+                ComboBox comboBox = new ComboBox();
+                
+                comboBox.Name = "valueComboBox";
+                comboBox.Size = new Size(106, 23);
+                comboBox.FormattingEnabled = true;
+                comboBox.ItemHeight = 23;
+                comboBox.BackColor = Color.FromKnownColor(KnownColor.Window);
+                comboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+                comboBox.FlatStyle = FlatStyle.Popup;
+
+                return comboBox;
             }
         }
        

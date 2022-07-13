@@ -42,6 +42,8 @@ namespace BinarySerializationEditor
 
         public bool changedValid = false; // If the element's value has been modified and is valid
 
+        public dynamic originalValue;
+
 
         public SerializationElement(string name, dynamic obj, OriginType originType, SerializationElement parent) // Recursive constructor
         {
@@ -50,6 +52,7 @@ namespace BinarySerializationEditor
             // Set argument stuff
             origin = originType;
             value = obj;
+            originalValue = value;
             this.name = name;
             this.parent = parent;
 
