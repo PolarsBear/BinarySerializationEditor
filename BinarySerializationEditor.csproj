@@ -61,7 +61,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyResolver.cs" />
-    <Compile Include="Deserialization.cs" />
+    <Compile Include="Display.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>

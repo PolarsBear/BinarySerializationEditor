@@ -28,7 +28,7 @@ namespace BinarySerializationEditor
         }
 
 
-        public Dictionary<string, SerializationElement> children; // All children, depending on classification, will be created in different ways
+        public Dictionary<string, SerializationElement> children = new Dictionary<string, SerializationElement>(); // All children, depending on classification, will be created in different ways
 
         public SerializationElement parent;
         public bool topLevel;
@@ -45,11 +45,20 @@ namespace BinarySerializationEditor
 
         public SerializationElement(string name, dynamic obj, OriginType originType, SerializationElement parent) // Recursive constructor
         {
+            Console.WriteLine($"---{name}---");
+
             // Set argument stuff
             origin = originType;
             value = obj;
             this.name = name;
             this.parent = parent;
+
+            // [TODO] Add proper functionality for Enums
+            if (value == null || Utils.IsPrimitive(value.GetType()) || value.GetType().IsEnum) // Is primitive
+            {
+                classification = Classification.Primitive;
+                return; // Primitive types have no children
+            }
 
             AddAllChildren(); // Add Children
         }
@@ -66,31 +75,25 @@ namespace BinarySerializationEditor
                 if (value is IDictionary) // Has two values for each item
                 {
                     classification = Classification.Dictionary;
-                    foreach (KeyValuePair<dynamic, dynamic> keyValue in value) // Iterate as Dictionary
+                    foreach (dynamic keyValue in value) // Iterate as Dictionary
                     {
-                        AddChildFromKeyValuePair(keyValue);
+                        AddChildFromKeyValuePair(keyValue.Key, keyValue.Value);
                     }
                 }
-                else // Has only one value for each item
+                else //if (!(value is string)) // Has only one value for each item
                 {
                     classification = Classification.List;
-                    int i = 0;
-                    foreach (object value in value) // Iterate as list
+                    int iter = 0;
+                    foreach (dynamic i in value) // Iterate as list
                     {
-                        AddChildFromListItem(i, value);
-                        i++;
+                        //Console.WriteLine(i);
+                        AddChildFromListItem(iter, i);
+                        iter++;
                     }
                 }
             }
-            else // Is object or primitive
+            else // Is object
             {
-                if (Utils.IsPrimitive(value.GetType())) // Is primitive
-                { 
-                    classification = Classification.Primitive;
-                    return; // Primitive types have no children
-                }
-
-                // Is object
                 classification = Classification.Object;
                 foreach (FieldInfo field in value.GetType().GetFields()) // Iterate through all fields
                 {
@@ -107,13 +110,13 @@ namespace BinarySerializationEditor
             return child;
         }
 
-        public SerializationElement AddChildFromKeyValuePair(KeyValuePair<object, object> kvp)
+        public SerializationElement AddChildFromKeyValuePair(dynamic key, dynamic value)
         {
-            var child = new SerializationElement(Convert.ToString(kvp.Key), kvp.Value, OriginType.DictEntry, this); // Create dictionary entry child
-            children.Add(Convert.ToString(kvp.Key), child);
+            var child = new SerializationElement(Convert.ToString(key), value, OriginType.DictEntry, this); // Create dictionary entry child
+            children.Add(Convert.ToString(key), child);
             return child;
         }
-        public SerializationElement AddChildFromListItem(int index, object value)
+        public SerializationElement AddChildFromListItem(int index, dynamic value)
         {
             var child = new SerializationElement(Convert.ToString(index), value, OriginType.ListItem, this); // Create list item child
             children.Add(Convert.ToString(index), child);

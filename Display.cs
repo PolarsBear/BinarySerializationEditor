@@ -37,7 +37,10 @@ namespace BinarySerializationEditor
         MainForm main; // Form for editing
         BinaryFormatter formatter = new BinaryFormatter(); // Formatter for (de)serializing
 
-        public static int currentY = 0; // Determines y position of future GUI elements
+        public int currentY = 0; // Determines y position of future GUI elements
+
+
+        public Control.ControlCollection viewControls;
         
 
         public Display(MainForm main, string path)
@@ -52,41 +55,58 @@ namespace BinarySerializationEditor
             topElement = new SerializationElement("Top", origin, SerializationElement.OriginType.TopLevel, null);
             currentElement = topElement;
 
-            DisplayElement(currentElement);
+            viewControls = main.objectView.Controls;
+
+            DisplayElement();
         }
 
         public void ResetForNewDisplay()
         {
             currentY = 0;
-            main.objectView.Controls.Clear();
+            viewControls.Clear();
             main.fieldNameTooltip.RemoveAll();
         }
 
-        public void DisplayElement(SerializationElement element)
+        public void DisplayElement()
         {
-            currentElement = element;
             ResetForNewDisplay();
 
+            foreach (KeyValuePair<string, SerializationElement> kvp in currentElement.children)
+            {
+                var gui = new ElementGUI(kvp.Value, this);
 
+                viewControls.Add(gui.label);
+                viewControls.Add(gui.textBox);
+                if (gui.hasBtn)
+                    viewControls.Add(gui.expandBtn);
+            }
         }
 
         public class ElementGUI
         {
-            MetroLabel label;
-            MetroTextBox textBox;
-            MetroButton expandBtn;
+            public MetroLabel label;
+            public MetroTextBox textBox;
+            public MetroButton expandBtn;
 
-            public ElementGUI(SerializationElement element)
+            public bool hasBtn = false;
+
+            public SerializationElement element;
+
+            public ElementGUI(SerializationElement element, Display display)
             {
+                this.element = element;
+
                 label = new MetroLabel();
                 label.AutoSize = false;
-                label.Location = new Point(5, 5 + currentY * 25);
+                label.Location = new Point(5, 5 + display.currentY * 25);
                 label.Name = "fieldLabel";
                 label.Size = new Size(81, 23);
                 label.TabIndex = 0;
 
+                label.Text = element.name;
+
                 textBox = new MetroTextBox();
-                textBox.Location = new Point(90, 5 + currentY * 25);
+                textBox.Location = new Point(90, 5 + display.currentY * 25);
                 textBox.Name = "valueTextBox";
                 textBox.Size = new Size(106, 23);
                 textBox.TabIndex = 1;
@@ -95,60 +115,32 @@ namespace BinarySerializationEditor
                 textBox.CustomBackground = true;
                 textBox.BackColor = Color.FromKnownColor(KnownColor.Window);
 
+                textBox.Text = Convert.ToString(element.value);
+
                 if (element.classification != SerializationElement.Classification.Primitive)
                 {
                     textBox.ReadOnly = true;
 
                     expandBtn = new MetroButton();
-                    expandBtn.Location = new Point(200, 5 + currentY * 25);
+                    expandBtn.Location = new Point(200, 5 + display.currentY * 25);
                     expandBtn.Name = "expandBtn";
                     expandBtn.Size = new Size(23, 23);
                     expandBtn.TabIndex = 0;
                     expandBtn.Text = "+";
                     expandBtn.Highlight = true;
+
+                    hasBtn = true;
+
+                    expandBtn.Click += delegate
+                    {
+                        display.currentElement = element;
+                        display.DisplayElement();
+                    };
                 }
+
+                display.currentY++;
             }
         }
-        
-
-
-        public Tuple<MetroLabel, MetroTextBox, MetroButton> CreateGenericGUI(bool moreData)
-        {
-            MetroLabel label = new MetroLabel();
-            label.AutoSize = false;
-            label.Location = new Point(5, 5 + currentY * 25);
-            label.Name = "fieldLabel";
-            label.Size = new Size(81, 23);
-            label.TabIndex = 0;
-
-            MetroTextBox textBox = new MetroTextBox();
-            textBox.Location = new Point(90, 5 + currentY * 25);
-            textBox.Name = "valueTextBox";
-            textBox.Size = new Size(106, 23);
-            textBox.TabIndex = 1;
-            textBox.ReadOnly = false;
-            textBox.UseStyleColors = true;
-            textBox.CustomBackground = true;
-            textBox.BackColor = Color.FromKnownColor(KnownColor.Window);
-
-            MetroButton expandBtn = null;
-
-            if (moreData)
-            {
-                textBox.ReadOnly = true;
-
-                expandBtn = new MetroButton();
-                expandBtn.Location = new Point(200, 5 + currentY * 25);
-                expandBtn.Name = "expandBtn";
-                expandBtn.Size = new Size(23, 23);
-                expandBtn.TabIndex = 0;
-                expandBtn.Text = "+";
-                expandBtn.Highlight = true;
-            }
-
-            currentY++;
-
-            return new Tuple<MetroLabel, MetroTextBox, MetroButton>(label, textBox, expandBtn);
-        }
+       
     }
 }

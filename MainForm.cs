@@ -20,10 +20,13 @@ namespace BinarySerializationEditor
     public partial class MainForm : MetroForm
     {
         BinaryFormatter formatter = new BinaryFormatter();
-        Deserialization deserialization = null;
+        Display display = null;
         public MainForm()
         {
             InitializeComponent();
+
+            openDLL.FileName = "C:\\Program Files (x86)\\Steam\\steamapps\\common\\WeNeedtoGoDeeper\\WeNeedToGoDeeper_Data\\Managed\\Assembly-CSharp.dll";
+            openDLL_FileOk("", new CancelEventArgs());
         }
         private void chooseFileBtn_Click(object sender, EventArgs e)
         {
@@ -32,21 +35,15 @@ namespace BinarySerializationEditor
 
         private void openFileDialog1_FileOk(object sender, CancelEventArgs e)
         {
-            Stream stream = chooseFile.OpenFile();
-            
-            try
-            {
-                formatter = new BinaryFormatter();
-                dynamic result = formatter.Deserialize(stream);
-                deserialization = new Deserialization(this, result);
-                deserialization.DisplayObject(result);
-            }
-            catch (Exception exception)
-            {
+            //try
+            //{
+                display = new Display(this, chooseFile.FileName);
+            //}
+            //catch (Exception exception)
+            /*{
                 MessageBox.Show(this, $"{exception.Message}\nDid you forget to load a DLL?\n(For Unity games, load AssemblyCSharp.dll)", "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 Console.WriteLine(exception.StackTrace);
-            }
-            stream.Close();
+            }*/
         }
 
         private void openDLL_FileOk(object sender, CancelEventArgs e)
@@ -69,22 +66,23 @@ namespace BinarySerializationEditor
 
         private void metroButton1_Click(object sender, EventArgs e)
         {
-            if (deserialization == null)
+            /*if (deserialization == null)
             {
                 MessageBox.Show(this, "You need to deserialize a binary file first!", "No Loaded Data");
                 return;
             }
-            saveDialog.ShowDialog(this);
+            saveDialog.ShowDialog(this);*/
         }
 
         private void saveDialog_FileOk(object sender, CancelEventArgs e)
         {
-            deserialization.Save(saveDialog.FileName);
+            //deserialization.Save(saveDialog.FileName);
         }
 
         private void metroButton2_Click(object sender, EventArgs e)
         {
-
+            display.currentElement = display.currentElement.parent;
+            display.DisplayElement();
         }
     }
 }

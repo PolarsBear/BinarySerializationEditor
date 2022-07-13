@@ -11,6 +11,7 @@ namespace BinarySerializationEditor
     {
         public static bool IsPrimitive(Type type)
         {
+            Console.WriteLine(type);
             return type.IsPrimitive
               || type.Equals(typeof(string));
         }
