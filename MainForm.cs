@@ -35,15 +35,7 @@ namespace BinarySerializationEditor
 
         private void openFileDialog1_FileOk(object sender, CancelEventArgs e)
         {
-            //try
-            //{
-                display = new Display(this, chooseFile.FileName);
-            //}
-            //catch (Exception exception)
-            /*{
-                MessageBox.Show(this, $"{exception.Message}\nDid you forget to load a DLL?\n(For Unity games, load AssemblyCSharp.dll)", "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                Console.WriteLine(exception.StackTrace);
-            }*/
+            display = new Display(this, chooseFile.FileName);
         }
 
         private void openDLL_FileOk(object sender, CancelEventArgs e)

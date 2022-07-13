@@ -83,6 +83,7 @@ namespace BinarySerializationEditor
                 if (gui.hasBtn)
                     viewControls.Add(gui.expandBtn);
             }
+            main.backButton.Visible = currentElement != topElement;
         }
 
         public class ElementGUI
@@ -185,6 +186,7 @@ namespace BinarySerializationEditor
                     expandBtn.TabIndex = 0;
                     expandBtn.Text = "+";
                     expandBtn.Highlight = true;
+                    expandBtn.Style = MetroFramework.MetroColorStyle.Yellow;
 
                     hasBtn = true;
 
