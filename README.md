@@ -5,7 +5,11 @@
 
 
 ## Current Features
-View saved data recursively
+View saved data
+Edit saved data
+Save edited data as a new file (or just overwrite the original)
+Load DLLs to fix dependencies
+
 
 ## Screenshots
 
