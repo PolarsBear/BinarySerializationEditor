@@ -119,7 +119,7 @@ namespace BinarySerializationEditor
             this.backButton.TabIndex = 6;
             this.backButton.Text = "Back";
             this.backButton.Visible = false;
-            this.backButton.Click += new System.EventHandler(this.metroButton2_Click);
+            this.backButton.Click += new System.EventHandler(this.backButton_Click);
             // 
             // MainForm
             // 

@@ -58,20 +58,20 @@ namespace BinarySerializationEditor
 
         private void metroButton1_Click(object sender, EventArgs e)
         {
-            /*if (deserialization == null)
+            if (display == null)
             {
                 MessageBox.Show(this, "You need to deserialize a binary file first!", "No Loaded Data");
                 return;
             }
-            saveDialog.ShowDialog(this);*/
+            saveDialog.ShowDialog(this);
         }
 
         private void saveDialog_FileOk(object sender, CancelEventArgs e)
         {
-            //deserialization.Save(saveDialog.FileName);
+            display.Save(saveDialog.FileName);
         }
 
-        private void metroButton2_Click(object sender, EventArgs e)
+        private void backButton_Click(object sender, EventArgs e)
         {
             display.currentElement = display.currentElement.parent;
             display.DisplayElement();

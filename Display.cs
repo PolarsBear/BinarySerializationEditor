@@ -9,6 +9,7 @@ using MetroFramework.Controls;
 using System.Windows.Forms;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Reflection;
+using System.Windows.Forms;
 using System.IO;
 
 
@@ -73,6 +74,17 @@ namespace BinarySerializationEditor
             main.fieldNameTooltip.RemoveAll();
         }
 
+        public void Save(string path)
+        {
+            FileStream file = File.OpenWrite(path);
+
+            formatter.Serialize(file, topElement.value);
+
+            file.Close();
+
+            MessageBox.Show(main, "File saved sucessfully!", "Saved");
+        }
+
         public void DisplayElement()
         {
             ResetForNewDisplay();
@@ -100,6 +112,8 @@ namespace BinarySerializationEditor
 
             public ElementGUI(SerializationElement element, Display display)
             {
+                this.display = display;
+
                 this.element = element;
 
                 label = new MetroLabel();
@@ -109,7 +123,11 @@ namespace BinarySerializationEditor
                 label.Size = new Size(81, 23);
                 label.TabIndex = 0;
 
+                label.FontSize = MetroFramework.MetroLabelSize.Small;
+
                 label.Text = element.name;
+
+                display.main.fieldNameTooltip.SetToolTip(label, element.name);
 
                 if (element.value is bool)
                 {
@@ -236,6 +254,10 @@ namespace BinarySerializationEditor
                 comboBox.BackColor = Color.FromKnownColor(KnownColor.Window);
                 comboBox.DropDownStyle = ComboBoxStyle.DropDownList;
                 comboBox.FlatStyle = FlatStyle.Popup;
+                comboBox.MouseWheel += (sender, e) =>
+                {
+                    ((HandledMouseEventArgs)e).Handled = true;
+                };
 
                 return comboBox;
             }
