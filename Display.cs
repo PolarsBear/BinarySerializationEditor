@@ -112,8 +112,6 @@ namespace BinarySerializationEditor
 
             public ElementGUI(SerializationElement element, Display display)
             {
-                this.display = display;
-
                 this.element = element;
 
                 label = new MetroLabel();
