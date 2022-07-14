@@ -9,9 +9,9 @@ View saved data recursively
 
 ## Screenshots
 
-![WNTGD Stats File](https://user-images.githubusercontent.com/63355054/178563978-b249072d-b6c2-43c8-8e63-5a2522e86b74.png)
-![WNTGD Stats File Modified](https://user-images.githubusercontent.com/63355054/178563596-d1eee8c1-94d6-47a1-974b-ad8efa2aef79.png)
-![WNTGD Stats File Tooltip](https://user-images.githubusercontent.com/63355054/178564409-b766f94c-cf00-4c45-8d6f-a427157e6a30.png)
+![image](https://user-images.githubusercontent.com/63355054/178862333-a14c9b6c-8d14-4f8d-9782-6dedd5ea1f39.png)
+![image](https://user-images.githubusercontent.com/63355054/178862425-0bf42f5b-4b13-476e-84ef-18e38e9cf681.png)
+![image](https://user-images.githubusercontent.com/63355054/178862408-26e81d51-b12b-4227-a86a-65d07c190626.png)
 
 
 (Modified values will be highlighted red or green if they are invalid or valid respectively)
