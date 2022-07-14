@@ -24,9 +24,6 @@ namespace BinarySerializationEditor
         public MainForm()
         {
             InitializeComponent();
-
-            openDLL.FileName = "C:\\Program Files (x86)\\Steam\\steamapps\\common\\WeNeedtoGoDeeper\\WeNeedToGoDeeper_Data\\Managed\\Assembly-CSharp.dll";
-            openDLL_FileOk("", new CancelEventArgs());
         }
         private void chooseFileBtn_Click(object sender, EventArgs e)
         {

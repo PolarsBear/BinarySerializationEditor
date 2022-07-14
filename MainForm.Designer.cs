@@ -62,14 +62,11 @@ namespace BinarySerializationEditor
             // 
             // chooseFile
             // 
-            this.chooseFile.InitialDirectory = "C:\\Users\\larzi\\AppData\\LocalLow\\Deli Interactive\\We Need to Go Deeper\\76561198188" +
-    "617354";
             this.chooseFile.FileOk += new System.ComponentModel.CancelEventHandler(this.openFileDialog1_FileOk);
             // 
             // openDLL
             // 
-            this.openDLL.InitialDirectory = "C:\\Program Files (x86)\\Steam\\steamapps\\common\\WeNeedtoGoDeeper\\WeNeedToGoDeeper_D" +
-    "ata\\Managed";
+            this.openDLL.Filter = "DLL files|*.dll|All files|*.*";
             this.openDLL.FileOk += new System.ComponentModel.CancelEventHandler(this.openDLL_FileOk);
             // 
             // loadDLLBtn
